@@ -20,9 +20,13 @@ const getPlaylist = (playlistOptions, callback) => {
    
     request({url: makeUrl(playlistOptions.userId, playlistOptions.mine, playlistOptions.cursor), json: true}, 
     (err, res) => {
+        if (err || !res.body || !res.body.collection){
+            return callback(JSON.stringify({trackList: null, nextPage: null}))
+        }
         var artistList = playlistOptions.mine == "favorites" ? 
             res.body.collection.map(song => song.user.id) :
             res.body.collection.map(artist => artist.id)
+        artistList = [...(new Set(artistList))]
         var cursor = res.body.next_href ? getCursorFromHref(res.body.next_href) : null
         playlistOptions.cursor = cursor
 
@@ -33,11 +37,13 @@ const getPlaylist = (playlistOptions, callback) => {
 const getTheir = (artistList, playlistOptions, callback) => {
     var trackList = []
     var theirHandle = playlistOptions.their === 'favorites' ? 'favorites' : 'tracks'
-
+    if (!artistList.length) {
+        return callback(JSON.stringify({trackList: null, nextPage: null}))
+    }
     for (var artistId of artistList){
         var url = makeUrl(artistId, theirHandle) + '&page_size=' + (playlistOptions.their === 'toptrack' ? '200' : '1')
         request({url, json: true}, (err, res) => {
-            if (res.body && res.body.collection){
+            if (!err && res.body && res.body.collection){
                 if (playlistOptions.their === 'toptrack'){
                     trackList.push(getTopTrack(res.body.collection))
                 } else {
