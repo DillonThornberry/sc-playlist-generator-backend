@@ -37,7 +37,7 @@ const getTheir = (artistList, playlistOptions, callback) => {
     for (var artistId of artistList){
         var url = makeUrl(artistId, theirHandle) + '&page_size=' + (playlistOptions.their === 'toptrack' ? '200' : '1')
         request({url, json: true}, (err, res) => {
-            if (res.body.collection){
+            if (res.body && res.body.collection){
                 if (playlistOptions.their === 'toptrack'){
                     trackList.push(getTopTrack(res.body.collection))
                 } else {
