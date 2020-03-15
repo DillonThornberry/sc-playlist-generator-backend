@@ -1,4 +1,4 @@
-### Creates SoundCloud playlist based off of a user's liked tracks, followed artists, and followers.
+## Creates SoundCloud playlist based off of a user's liked tracks, followed artists, and followers.
 
 GET /search - Searches for a user's Soundcloud account
 
